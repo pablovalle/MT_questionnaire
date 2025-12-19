@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>System Failure Analysis</title>
+  <style>
+    /* --- DARK THEME / TECHNICAL STYLING --- */
+    :root {
+      --bg-color: #121212;
+      --card-bg: #1e1e1e;
+      --input-bg: #2c2c2c;
+      --text-main: #e0e0e0;
+      --text-muted: #a0a0a0;
+      --accent-color: #3f51b5; /* Tech Blue */
+      --accent-hover: #5c6bc0;
+      --danger: #cf6679;
+      --border-color: #333;
+      --font-stack: 'Roboto Mono', 'Courier New', monospace; /* Monospace for engineering feel */
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif; /* UI font */
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1, h2 {
+      font-weight: 300;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    /* Common Container Style */
+    .container {
+      background-color: var(--card-bg);
+      padding: 40px;
+      border-radius: 4px; /* Sharper corners */
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      width: 100%;
+      max-width: 900px;
+      text-align: center;
+    }
+
+    /* --- LOGIN FORM --- */
+    #loginForm {
+      max-width: 400px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      background-color: var(--input-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      border-radius: 4px;
+      font-family: var(--font-stack); /* Coding font for inputs */
+      box-sizing: border-box;
+      transition: border 0.3s;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent-color);
+    }
+
+    button {
+      background-color: var(--accent-color);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      text-transform: uppercase;
+      font-weight: bold;
+      letter-spacing: 1px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.3s;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: var(--accent-hover);
+    }
+
+    /* --- VIDEO & EVALUATION AREA --- */
+    #evalContainer {
+      display: none;
+      text-align: left; /* Technical layout often left-aligned */
+    }
+
+    .header-info {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+      font-family: var(--font-stack);
+      font-size: 0.9em;
+      color: var(--text-muted);
+    }
+
+    /* Progress Bar - Thin and Technical */
+    #progressWrapper {
+      width: 100%;
+      background-color: #000;
+      height: 4px;
+      margin-bottom: 25px;
+      position: relative;
+    }
+    #progressBar {
+      height: 100%;
+      background-color: var(--accent-color);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    video {
+      width: 100%;
+      background: #000;
+      border: 1px solid var(--border-color);
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.9em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .status-msg {
+      margin-top: 10px;
+      font-size: 0.9em;
+      min-height: 20px;
+    }
+    .error { color: var(--danger); }
+    .success { color: #4caf50; }
+
+    /* Spinner */
+    .loader {
+      border: 3px solid rgba(255,255,255,0.1);
+      border-top: 3px solid var(--accent-color);
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 10px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+  </style>
+</head>
+<body>
+
+  <div id="loginForm" class="container">
+    <h2>System Access</h2>
+    <input type="text" id="usernameInput" placeholder="Operator ID (Username)" autocomplete="off">
+    <input type="password" id="passwordInput" placeholder="Access Key (Password)" onkeydown="if(event.key==='Enter'){attemptLogin();}">
+    <button onclick="attemptLogin()">Initialize Session</button>
+    <div id="loginStatus" class="status-msg"></div>
+  </div>
+
+  <div id="evalContainer" class="container">
+    <div class="header-info">
+      <span id="userDisplay">OP: UNKNOWN</span>
+      <span id="fileDisplay">FILE: N/A</span>
+      <span id="counterDisplay">0 / 0</span>
+    </div>
+
+    <div id="progressWrapper">
+      <div id="progressBar"></div>
+    </div>
+
+    <video id="mainVideo" controls>
+      <source src="" type="video/mp4">
+      Playback error.
+    </video>
+
+    <label for="failureReport">Anomaly / Failure Description:</label>
+    <textarea id="failureReport" placeholder="Describe the specific failure observed in the simulation..."></textarea>
+    
+    <button onclick="submitReport()">Log Anomaly & Next</button>
+  </div>
+
+  <div id="completionScreen" class="container" style="display:none;">
+    <h2>Analysis Complete</h2>
+    <p style="color: var(--text-muted)">All data has been synchronized with the central database.</p>
+    <p>You may close this terminal.</p>
+  </div>
+
+  <script>
+    // ************************************************
+    // CONFIGURATION
+    // ************************************************
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx5v_iKKng1PsMmjAROh4Vp3NHwqSHVa5vn_wFSQgV9m_7jyxN-EN7vySAjXTdu7NKU/exec"; // PASTE YOUR URL HERE
+    // ************************************************
+
+    let videoQueue = [];
+    let currentIndex = 0;
+    let currentUser = "";
+
+    // 1. LOGIN LOGIC
+    function attemptLogin() {
+      const u = document.getElementById('usernameInput').value.trim();
+      const p = document.getElementById('passwordInput').value.trim();
+      const status = document.getElementById('loginStatus');
+
+      if (!u || !p) {
+        status.innerHTML = "<span class='error'>Credentials required.</span>";
+        return;
+      }
+
+      status.innerHTML = "<div class='loader'></div> Authenticating...";
+
+      // JSONP Login Request
+      const callbackName = 'cb_login_' + Date.now();
+      window[callbackName] = function(resp) {
+        if (resp.success) {
+          currentUser = resp.user;
+          document.getElementById('userDisplay').innerText = "OP: " + currentUser.toUpperCase();
+          fetchVideoList();
+        } else {
+          status.innerHTML = "<span class='error'>Access Denied.</span>";
+        }
+        cleanup(callbackName);
+      };
+
+      const script = document.createElement('script');
+      script.src = `${APPS_SCRIPT_URL}?action=login&username=${encodeURIComponent(u)}&password=${encodeURIComponent(p)}&callback=${callbackName}`;
+      script.onerror = () => status.innerHTML = "<span class='error'>Connection Error.</span>";
+      document.body.appendChild(script);
+    }
+
+    // 2. FETCH VIDEO LIST
+    function fetchVideoList() {
+      const status = document.getElementById('loginStatus');
+      status.innerHTML = "<div class='loader'></div> Fetching dataset...";
+
+      const callbackName = 'cb_videos_' + Date.now();
+      window[callbackName] = function(data) {
+        videoQueue = data;
+        if (videoQueue && videoQueue.length > 0) {
+          document.getElementById('loginForm').style.display = 'none';
+          document.getElementById('evalContainer').style.display = 'block';
+          loadVideo(0);
+        } else {
+          status.innerHTML = "<span class='error'>No dataset found.</span>";
+        }
+        cleanup(callbackName);
+      };
+
+      const script = document.createElement('script');
+      script.src = `${APPS_SCRIPT_URL}?action=getVideos&callback=${callbackName}`;
+      document.body.appendChild(script);
+    }
+
+    // 3. LOAD VIDEO
+    function loadVideo(index) {
+      if (index >= videoQueue.length) {
+        finishSession();
+        return;
+      }
+      currentIndex = index;
+      
+      const vid = document.getElementById('mainVideo');
+      // Assumes videos are in a local 'videos/' folder relative to HTML, matching the file list from Drive
+      // Adjust path prefix if your folder structure differs
+      const videoName = videoQueue[index];
+      
+      // If the Drive script returns just filenames, we assume they are in 'videos/' folder in repo
+      vid.src = `videos/${videoName}`; 
+      vid.load();
+
+      // Update UI
+      document.getElementById('fileDisplay').innerText = `FILE: ${videoName}`;
+      document.getElementById('counterDisplay').innerText = `${currentIndex + 1} / ${videoQueue.length}`;
+      
+      const pct = ((currentIndex) / videoQueue.length) * 100;
+      document.getElementById('progressBar').style.width = `${pct}%`;
+      
+      // Clear previous input
+      document.getElementById('failureReport').value = "";
+    }
+
+    // 4. SUBMIT REPORT
+    function submitReport() {
+      const text = document.getElementById('failureReport').value.trim();
+      if (!text) {
+        alert("FAILURE DESCRIPTION REQUIRED.\nPlease input observation before proceeding.");
+        return;
+      }
+
+      const vid = document.getElementById('mainVideo');
+      const timeStamp = vid.currentTime.toFixed(2);
+      const currentVidName = videoQueue[currentIndex];
+
+      // Send to Backend (Fire and Forget style via GET to avoid CORS preflight issues on simple text)
+      // We use a fetch GET here because we aren't waiting for a specific JSONP callback to continue immediately
+      const params = new URLSearchParams({
+        action: 'submit',
+        username: currentUser,
+        video: currentVidName,
+        failure: text,
+        videoTime: timeStamp
+      });
+
+      fetch(`${APPS_SCRIPT_URL}?${params.toString()}`, { mode: 'no-cors' })
+        .then(() => console.log("Data packet sent"))
+        .catch(e => console.error("Transmission error", e));
+
+      // Move immediately to next
+      loadVideo(currentIndex + 1);
+    }
+
+    function finishSession() {
+      document.getElementById('evalContainer').style.display = 'none';
+      document.getElementById('completionScreen').style.display = 'block';
+      document.getElementById('progressBar').style.width = `100%`;
+    }
+
+    function cleanup(name) {
+      delete window[name];
+      // Optional: remove script tag if desired
+    }
+  </script>
+</body>
+</html>
