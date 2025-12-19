@@ -244,7 +244,7 @@
 
       const script = document.createElement('script');
       script.src = `${APPS_SCRIPT_URL}?action=login&username=${encodeURIComponent(u)}&password=${encodeURIComponent(p)}&callback=${callbackName}`;
-      script.onerror = () => status.innerHTML = "<span class='error'>Connection Error.</span>";
+      script.onerror = () => status.innerHTML = "<span class='error'>Connection Error.</spxan>";
       document.body.appendChild(script);
     }
 
