@@ -2,119 +2,115 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>System Failure Analysis</title>
   <style>
-    /* --- DARK THEME / TECHNICAL STYLING --- */
+    /* --- PROFESSIONAL LIGHT THEME --- */
     :root {
-      --bg-color: #121212;
-      --card-bg: #1e1e1e;
-      --input-bg: #2c2c2c;
-      --text-main: #e0e0e0;
-      --text-muted: #a0a0a0;
-      --accent-color: #3f51b5; /* Tech Blue */
-      --accent-hover: #5c6bc0;
-      --danger: #cf6679;
-      --border-color: #333;
-      --font-stack: 'Roboto Mono', 'Courier New', monospace; /* Monospace for engineering feel */
+      --bg-color: #f4f6f9;       /* Light Blue-Gray Background */
+      --card-bg: #ffffff;        /* Pure White Card */
+      --text-main: #2c3e50;      /* Dark Slate for text */
+      --text-muted: #7f8c8d;     /* Soft Gray for secondary text */
+      --accent-color: #2563eb;   /* Professional Blue */
+      --accent-hover: #1d4ed8;   /* Darker Blue on hover */
+      --border-color: #e2e8f0;   /* Subtle borders */
+      --input-bg: #f8fafc;       /* Very light gray for inputs */
+      --danger: #ef4444;         /* Red for errors */
+      --success: #10b981;        /* Green for success */
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
     }
 
     body {
-      font-family: 'Segoe UI', sans-serif; /* UI font */
+      font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
       background-color: var(--bg-color);
       color: var(--text-main);
+      margin: 0;
+      padding: 0;
+      height: 100vh; /* Force full screen height */
+      width: 100vw;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
+      overflow: hidden; /* Prevent scrolling globally */
     }
 
-    h1, h2 {
-      font-weight: 300;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      margin-bottom: 20px;
-    }
-
-    /* Common Container Style */
+    /* --- LAYOUT CONTAINERS --- */
     .container {
       background-color: var(--card-bg);
+      width: 90%;
+      max-width: 1000px;
+      height: 90vh; /* Occupy 90% of screen height */
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden; /* Keep content inside borders */
+      position: relative;
+    }
+
+    /* Login Specific Sizing */
+    #loginForm {
+      height: auto;
+      max-width: 400px;
       padding: 40px;
-      border-radius: 4px; /* Sharper corners */
-      border: 1px solid var(--border-color);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-      width: 100%;
-      max-width: 900px;
       text-align: center;
     }
 
-    /* --- LOGIN FORM --- */
-    #loginForm {
-      max-width: 400px;
-    }
-
-    input, textarea {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 15px;
-      background-color: var(--input-bg);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      border-radius: 4px;
-      font-family: var(--font-stack); /* Coding font for inputs */
-      box-sizing: border-box;
-      transition: border 0.3s;
-    }
-
-    input:focus, textarea:focus {
-      outline: none;
-      border-color: var(--accent-color);
-    }
-
-    button {
-      background-color: var(--accent-color);
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      text-transform: uppercase;
-      font-weight: bold;
-      letter-spacing: 1px;
-      cursor: pointer;
-      border-radius: 4px;
-      transition: background 0.3s;
-      width: 100%;
-    }
-
-    button:hover {
-      background-color: var(--accent-hover);
-    }
-
-    /* --- VIDEO & EVALUATION AREA --- */
+    /* Evaluation Specific Sizing */
     #evalContainer {
-      display: none;
-      text-align: left; /* Technical layout often left-aligned */
+      display: none; /* Hidden by default */
+      padding: 0;
     }
 
-    .header-info {
+    /* --- TYPOGRAPHY --- */
+    h2 {
+      margin: 0 0 20px 0;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    
+    label {
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      display: block;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* --- HEADER (Inside Eval) --- */
+    .header-bar {
+      padding: 15px 30px;
+      border-bottom: 1px solid var(--border-color);
       display: flex;
       justify-content: space-between;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 15px;
-      margin-bottom: 20px;
-      font-family: var(--font-stack);
-      font-size: 0.9em;
+      align-items: center;
+      background-color: #fff;
+      flex-shrink: 0; /* Don't shrink */
+    }
+
+    .user-tag {
+      font-weight: 600;
+      color: var(--accent-color);
+      background: #eff6ff;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+    }
+
+    .progress-text {
+      font-variant-numeric: tabular-nums;
+      font-weight: 500;
       color: var(--text-muted);
     }
 
-    /* Progress Bar - Thin and Technical */
+    /* --- PROGRESS BAR --- */
     #progressWrapper {
       width: 100%;
-      background-color: #000;
       height: 4px;
-      margin-bottom: 25px;
-      position: relative;
+      background-color: var(--border-color);
+      flex-shrink: 0;
     }
     #progressBar {
       height: 100%;
@@ -123,93 +119,178 @@
       transition: width 0.3s ease;
     }
 
-    video {
-      width: 100%;
-      background: #000;
-      border: 1px solid var(--border-color);
-      margin-bottom: 20px;
+    /* --- MAIN CONTENT AREA (Flexbox magic for no scroll) --- */
+    .content-area {
+      flex-grow: 1; /* Takes all available space */
+      display: flex;
+      flex-direction: column;
+      padding: 20px 30px;
+      overflow: hidden; /* No scroll here either */
+      gap: 15px;
     }
 
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-size: 0.9em;
-      color: var(--text-muted);
-      text-transform: uppercase;
+    /* Video Wrapper - Dynamic Sizing */
+    .video-wrapper {
+      flex-grow: 1; /* This makes the video take up remaining height */
+      background: #000;
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+      min-height: 0; /* Crucial for flex containers to shrink */
+      display: flex;
+      justify-content: center;
+      background-color: #f1f5f9;
+    }
+
+    video {
+      height: 100%; /* Match wrapper height */
+      width: 100%;  /* Max width */
+      object-fit: contain; /* Keep aspect ratio, show black bars if needed */
+      outline: none;
+    }
+
+    /* Input Area - Fixed at bottom */
+    .input-area {
+      flex-shrink: 0; /* Don't shrink */
     }
 
     textarea {
-      min-height: 100px;
-      resize: vertical;
+      width: 100%;
+      height: 80px; /* Fixed height for input */
+      padding: 12px;
+      background-color: var(--input-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-main);
+      font-family: inherit;
+      resize: none; /* Disable manual resize to prevent breaking layout */
+      box-sizing: border-box;
+      transition: all 0.2s;
     }
 
-    .status-msg {
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      background-color: #fff;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      background-color: var(--input-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: var(--accent-color);
+    }
+
+    /* --- BUTTONS --- */
+    button {
+      background-color: var(--accent-color);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: background 0.2s, transform 0.1s;
+      width: 100%;
       margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: var(--accent-hover);
+    }
+    
+    button:active {
+      transform: translateY(1px);
+    }
+
+    /* Spinner */
+    .loader {
+      border: 2px solid rgba(37, 99, 235, 0.1);
+      border-top: 2px solid var(--accent-color);
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .status-msg {
+      margin-top: 15px;
       font-size: 0.9em;
       min-height: 20px;
     }
     .error { color: var(--danger); }
-    .success { color: #4caf50; }
-
-    /* Spinner */
-    .loader {
-      border: 3px solid rgba(255,255,255,0.1);
-      border-top: 3px solid var(--accent-color);
-      border-radius: 50%;
-      width: 20px;
-      height: 20px;
-      animation: spin 1s linear infinite;
-      display: inline-block;
-      vertical-align: middle;
-      margin-right: 10px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
+    
   </style>
 </head>
 <body>
 
   <div id="loginForm" class="container">
-    <h2>System Access</h2>
-    <input type="text" id="usernameInput" placeholder="Operator ID (Username)" autocomplete="off">
-    <input type="password" id="passwordInput" placeholder="Access Key (Password)" onkeydown="if(event.key==='Enter'){attemptLogin();}">
-    <button onclick="attemptLogin()">Initialize Session</button>
+    <h2>Welcome Back</h2>
+    <p style="color: var(--text-muted); margin-bottom: 25px; font-size: 0.9em;">Please enter your credentials to access the evaluation dashboard.</p>
+    
+    <input type="text" id="usernameInput" placeholder="Username" autocomplete="off">
+    <input type="password" id="passwordInput" placeholder="Password" onkeydown="if(event.key==='Enter'){attemptLogin();}">
+    
+    <button onclick="attemptLogin()">Log In</button>
     <div id="loginStatus" class="status-msg"></div>
   </div>
 
   <div id="evalContainer" class="container">
-    <div class="header-info">
-      <span id="userDisplay">OP: UNKNOWN</span>
-      <span id="fileDisplay">FILE: N/A</span>
-      <span id="counterDisplay">0 / 0</span>
+    
+    <div class="header-bar">
+      <span id="userDisplay" class="user-tag">User: ...</span>
+      <span id="counterDisplay" class="progress-text">0 / 0</span>
     </div>
 
     <div id="progressWrapper">
       <div id="progressBar"></div>
     </div>
 
-    <video id="mainVideo" controls>
-      <source src="" type="video/mp4">
-      Playback error.
-    </video>
+    <div class="content-area">
+      
+      <div class="video-wrapper">
+        <video id="mainVideo" controls>
+          <source src="" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>
 
-    <label for="failureReport">Anomaly / Failure Description:</label>
-    <textarea id="failureReport" placeholder="Describe the specific failure observed in the simulation..."></textarea>
-    
-    <button onclick="submitReport()">Log Anomaly & Next</button>
+      <div class="input-area">
+        <label for="failureReport">Observation / Failure Details</label>
+        <textarea id="failureReport" placeholder="Please describe the failure observed in this simulation..."></textarea>
+        <button onclick="submitReport()">Submit Observation & Next</button>
+      </div>
+
+    </div>
   </div>
 
-  <div id="completionScreen" class="container" style="display:none;">
-    <h2>Analysis Complete</h2>
-    <p style="color: var(--text-muted)">All data has been synchronized with the central database.</p>
-    <p>You may close this terminal.</p>
+  <div id="completionScreen" class="container" style="display:none; justify-content: center; align-items: center; text-align: center;">
+    <div style="padding: 40px;">
+      <h2 style="color: var(--success); font-size: 2rem;">All Tasks Completed</h2>
+      <p style="color: var(--text-muted); font-size: 1.1em; margin-top: 10px;">Thank you for your contribution. All data has been saved successfully.</p>
+      <p style="margin-top: 30px; font-size: 0.9em; color: #aaa;">You may close this window.</p>
+    </div>
   </div>
 
   <script>
     // ************************************************
-    // CONFIGURATION
+    // PASTE YOUR WORKING URL HERE
     // ************************************************
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx5v_iKKng1PsMmjAROh4Vp3NHwqSHVa5vn_wFSQgV9m_7jyxN-EN7vySAjXTdu7NKU/exec"; // PASTE YOUR URL HERE
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx5v_iKKng1PsMmjAROh4Vp3NHwqSHVa5vn_wFSQgV9m_7jyxN-EN7vySAjXTdu7NKU/exec"; 
     // ************************************************
 
     let videoQueue = [];
@@ -223,45 +304,44 @@
       const status = document.getElementById('loginStatus');
 
       if (!u || !p) {
-        status.innerHTML = "<span class='error'>Credentials required.</span>";
+        status.innerHTML = "<span class='error'>Please enter both username and password.</span>";
         return;
       }
 
-      status.innerHTML = "<div class='loader'></div> Authenticating...";
+      status.innerHTML = "<div class='loader'></div> Verifying credentials...";
 
-      // JSONP Login Request
       const callbackName = 'cb_login_' + Date.now();
       window[callbackName] = function(resp) {
         if (resp.success) {
           currentUser = resp.user;
-          document.getElementById('userDisplay').innerText = "OP: " + currentUser.toUpperCase();
+          document.getElementById('userDisplay').innerText = currentUser; // Simpler display
           fetchVideoList();
         } else {
-          status.innerHTML = "<span class='error'>Access Denied.</span>";
+          status.innerHTML = "<span class='error'>Incorrect username or password.</span>";
         }
         cleanup(callbackName);
       };
 
       const script = document.createElement('script');
       script.src = `${APPS_SCRIPT_URL}?action=login&username=${encodeURIComponent(u)}&password=${encodeURIComponent(p)}&callback=${callbackName}`;
-      script.onerror = () => status.innerHTML = "<span class='error'>Connection Error.</spxan>";
+      script.onerror = () => status.innerHTML = "<span class='error'>Connection failed. Check permissions.</span>";
       document.body.appendChild(script);
     }
 
     // 2. FETCH VIDEO LIST
     function fetchVideoList() {
       const status = document.getElementById('loginStatus');
-      status.innerHTML = "<div class='loader'></div> Fetching dataset...";
+      status.innerHTML = "<div class='loader'></div> Loading resources...";
 
       const callbackName = 'cb_videos_' + Date.now();
       window[callbackName] = function(data) {
         videoQueue = data;
         if (videoQueue && videoQueue.length > 0) {
           document.getElementById('loginForm').style.display = 'none';
-          document.getElementById('evalContainer').style.display = 'block';
+          document.getElementById('evalContainer').style.display = 'flex'; // Use flex for layout
           loadVideo(0);
         } else {
-          status.innerHTML = "<span class='error'>No dataset found.</span>";
+          status.innerHTML = "<span class='error'>No videos found in the connected folder.</span>";
         }
         cleanup(callbackName);
       };
@@ -280,22 +360,19 @@
       currentIndex = index;
       
       const vid = document.getElementById('mainVideo');
-      // Assumes videos are in a local 'videos/' folder relative to HTML, matching the file list from Drive
-      // Adjust path prefix if your folder structure differs
       const videoName = videoQueue[index];
       
-      // If the Drive script returns just filenames, we assume they are in 'videos/' folder in repo
+      // Load video
       vid.src = `videos/${videoName}`; 
       vid.load();
 
-      // Update UI
-      document.getElementById('fileDisplay').innerText = `FILE: ${videoName}`;
+      // Update Counters (Video Name is hidden via HTML removal)
       document.getElementById('counterDisplay').innerText = `${currentIndex + 1} / ${videoQueue.length}`;
       
       const pct = ((currentIndex) / videoQueue.length) * 100;
       document.getElementById('progressBar').style.width = `${pct}%`;
       
-      // Clear previous input
+      // Clear input
       document.getElementById('failureReport').value = "";
     }
 
@@ -303,7 +380,7 @@
     function submitReport() {
       const text = document.getElementById('failureReport').value.trim();
       if (!text) {
-        alert("FAILURE DESCRIPTION REQUIRED.\nPlease input observation before proceeding.");
+        alert("Please describe the failure before proceeding.");
         return;
       }
 
@@ -311,8 +388,7 @@
       const timeStamp = vid.currentTime.toFixed(2);
       const currentVidName = videoQueue[currentIndex];
 
-      // Send to Backend (Fire and Forget style via GET to avoid CORS preflight issues on simple text)
-      // We use a fetch GET here because we aren't waiting for a specific JSONP callback to continue immediately
+      // Submit data silently
       const params = new URLSearchParams({
         action: 'submit',
         username: currentUser,
@@ -322,22 +398,21 @@
       });
 
       fetch(`${APPS_SCRIPT_URL}?${params.toString()}`, { mode: 'no-cors' })
-        .then(() => console.log("Data packet sent"))
-        .catch(e => console.error("Transmission error", e));
+        .then(() => console.log("Saved"))
+        .catch(e => console.error("Error saving", e));
 
-      // Move immediately to next
+      // Move to next
       loadVideo(currentIndex + 1);
     }
 
     function finishSession() {
       document.getElementById('evalContainer').style.display = 'none';
-      document.getElementById('completionScreen').style.display = 'block';
+      document.getElementById('completionScreen').style.display = 'flex';
       document.getElementById('progressBar').style.width = `100%`;
     }
 
     function cleanup(name) {
       delete window[name];
-      // Optional: remove script tag if desired
     }
   </script>
 </body>
